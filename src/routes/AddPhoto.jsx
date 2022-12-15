@@ -10,24 +10,26 @@ const AddPhoto = () => {
 
   const addPhoto = (e) => {
     e.preventDefault();
+
     fetch("https://gallery-app-server.vercel.app/photos",{
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        imageUrl : `${imageUrl}`,
-        captions : `${captions}`,
-        createdAt : `${Date().toString()}`, 
-        updatedAt: `${Date().toString()}`, 
-        secret : secret,
-      }),
-    })
-    .then((response) => response.json())
-    .then((json) => {
-      console.log(json),
-      navigate("/photos")
-    })
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+  
+        },
+        body:JSON.stringify({
+          imageUrl:imageUrl,
+          captions:captions,
+          createdAt:new Date().toString(),
+          updatedAt:new Date().toString(),
+          secret:secret
+        }
+        )
+      })
+      .then((response) => response.json())
+      .then((json) => {
+        secret !== 'password' ? setError(json.error) : navigate('/photos')
+      })
     // TODO: answer here
   };
 

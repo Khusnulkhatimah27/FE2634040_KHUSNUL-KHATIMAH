@@ -12,19 +12,28 @@ const EditPhoto = () => {
 
   const editPhoto = (e) => {
     e.preventDefault();
-    fetch(`https://gallery-app-server.vercel.app/photos/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        imageUrl,
-        captions,
-        updatedAt: Date.now()
+
+    const dataPhoto = {
+      imageUrl:imageUrl,
+      captions:captions,
+      createdAt:new Date().toString(),
+      updatedAt:new Date().toString(),
+      
+
+    }
+
+    fetch(`https://gallery-app-server.vercel.app/photos/${id}`,{
+        method:"PATCH",
+        headers:{
+          "Content-Type":"application/json"
+  
+        },
+        body:JSON.stringify(dataPhoto)
       })
-    })
-    .then((res)=> res.json())
-    .then(()=> navigate('/photos'))
+      .then((response) => response.json())
+      .then(() => {
+        navigate('/photos')
+      })
 
     // TODO: answer here
   };
@@ -33,12 +42,16 @@ const EditPhoto = () => {
     setLoading(true);
 
     fetch(`https://gallery-app-server.vercel.app/photos/${id}`)
-    .then(res => res.json())
-    .then(photo => {
-      setImageUrl(photo.imageUrl)
-      setCaptions(photo.captions)
-      setLoading(false)
+    .then((response) => {
+      return response.json()
     })
+    .then((json) => {
+      setLoading(false);
+      setImageUrl(json.imageUrl);
+      setCaptions(json.captions);
+
+    })
+    // TODO: answer here
   }, [id]);
 
   if (error) return <div>Error!</div>;

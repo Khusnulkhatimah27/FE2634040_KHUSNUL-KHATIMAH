@@ -11,64 +11,51 @@ const Photos = () => {
   const [error, setError] = useState(null);
 
   const deletePhoto = (id) => {
-    fetch(`https://gallery-app-server.vercel.app/photos/${id}`, {
-      "method": "DELETE"
+    fetch(`https://gallery-app-server.vercel.app/photos/${id}`,{
+      method:"DELETE"
+    }
+    )
+    .then(response => response.json())
+    .then(() => {
+      const filterPhoto = [...photos].filter((photo) => photo.id != id)
+      setPhotos(filterPhoto)
     })
-    .then(res => res.json())
-    .then(() => setPhotos(photos.filter(photo => photo.id !== id)))
     // TODO: answer here
   };
 
   useEffect(() => {
     setLoading(true);
-
-    fetch(`https://gallery-app-server.vercel.app/photos?_sort=id&_order=${sort}`)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
+    async function fetchData(){
+      try {
+        const data = await (
+          await fetch(`https://gallery-app-server.vercel.app/photos?_sort=id&_order=${sort}&q=${search}`)
+        ).json(); 
         setPhotos(data);
-        setLoading(false);
-        setError(null);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-      if (search) {
-        fetch(`https://gallery-app-server.vercel.app/photos?q=${search}`)
-          .then((res) => {
-            return res.json();
-          })
-          .then((data) => {
-            setPhotos(data);
-            setLoading(false);
-            setError(null);
-          })
-          .catch((err) => {
-            setError(err.message);
-            setLoading(false);
-          });
+      } catch (error) {
+        setError(true);
       }
+    }
+    fetchData();
+    setLoading(false);
+
     // TODO: answer here
   }, [sort, submited]);
 
   useEffect(() => {
     setLoading(true);
-    
-    async function fetchData(){
-      try {
-        const data = await (
-          await fetch("https://gallery-app-server.vercel.app/photos")
-        ).json(); 
-        setPhotos(data);
-      } catch (err) {
-        setError(err);
-      }
-    }
 
-    fetchData();
+    fetch('https://gallery-app-server.vercel.app/photos')
+    .then((res) => res.json())
+    .then((json) => {
+      setPhotos(json);
+      setLoading(false);
+
+    })
+
+    .catch((error) => {
+    setError(error);
     setLoading(false);
+  })
     // TODO: answer here
   }, []);
 
